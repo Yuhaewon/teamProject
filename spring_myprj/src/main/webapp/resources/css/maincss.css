@@ -1,0 +1,58 @@
+body {
+	background-color: white;
+}
+
+#all {
+	width: 100%;
+	height: 400px;
+	margin-top: 20px;
+	margin-bottom: 30px;
+	margin-left: 100px;
+}
+
+#contents {
+	float: left;
+	display: inline-block;
+	text-align: center;
+	width: 50%;
+	height: 400px;
+	background-color: white;
+}
+#contentsList{
+	float: left;
+	display: inline-block;
+	width: 35%;
+	height: 400px;
+	background-color: #D2B48C;
+}
+
+#vcontentsList {
+	float: left;
+	display: inline-block;
+	text-align: center;
+	width: 23%;
+	height: 400px;
+	background-color: white;
+}
+
+
+#div2 {
+	display: inline-block;
+	background-color: #F2F5A9;
+}
+
+ul li{
+	list-style: none;
+}
+
+#hae {
+	margin-left: 35%;
+}
+
+#hide{
+	margin-left: 30px;
+}
+
+#Show{
+	margin-left: 30px;
+}

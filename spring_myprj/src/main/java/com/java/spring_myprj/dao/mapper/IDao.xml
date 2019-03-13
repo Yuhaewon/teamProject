@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.java.spring_myprj.dao.IDao">
+  	<!-- 비디오 검색 -->
+  	<select id="selectVideo" resultType="com.java.spring_myprj.dto.VideoDto">
+  		SELECT VNUM,VHIT,VDATE,USERID,VADDR,VTITLE,VCONTENT,USERINTERESTS,VREVIEW,VIMAGE FROM VIDEO WHERE VTITLE LIKE '%'||#{param1}||'%'
+  	</select>
+
+  	<!-- 비디오 리스트 -->
+  	<select id="vList" resultType="com.java.spring_myprj.dto.VideoDto">
+		SELECT VNUM,VHIT,VDATE,USERID,VADDR,VTITLE,VCONTENT,USERINTERESTS,VREVIEW,VIMAGE FROM
+		(SELECT VNUM,VHIT,VDATE,USERID,VADDR,VTITLE,VCONTENT,USERINTERESTS,VREVIEW,VIMAGE FROM VIDEO ORDER BY VDATE DESC)
+		WHERE ROWNUM <![CDATA[<=]]>18 ORDER BY VDATE DESC
+  	</select>
+  	
+  	<!-- 비디오 리스트 -->
+  	<select id="vViewH" resultType="com.java.spring_myprj.dto.VideoDto">
+		SELECT VNUM,VHIT,VDATE,USERID,VADDR,VTITLE,VCONTENT,USERINTERESTS,VREVIEW,VIMAGE FROM
+		(SELECT VNUM,VHIT,VDATE,USERID,VADDR,VTITLE,VCONTENT,USERINTERESTS,VREVIEW,VIMAGE FROM VIDEO ORDER BY VDATE DESC)
+		WHERE ROWNUM <![CDATA[<=]]>18 ORDER BY VHIT DESC
+  	</select>
+  	
+  	<!-- 사용자 비디오 리스트 -->
+  	<select id="mList" resultType="com.java.spring_myprj.dto.VideoDto">
+  		SELECT VIMAGE,VTITLE,VCONTENT FROM VIDEO WHERE VNUM= #{param1}
+  	</select>
+
+  	<!-- 비디오 뷰 -->
+  	<select id="vView" resultType="com.java.spring_myprj.dto.VideoDto">
+		SELECT VNUM,VHIT,VDATE,USERID,VADDR,VTITLE,VCONTENT,USERINTERESTS,VREVIEW,VIMAGE FROM VIDEO WHERE VNUM= #{param1}	
+  	</select>
+  	
+  	<!-- 비디오 조회수 -->
+	<update id="upHit">
+		UPDATE VIDEO SET VHIT=VHIT+1 WHERE VNUM=#{param1}
+	</update>
+  	
+  	<!-- 비디오뷰 댓글 -->
+  	<select id="vRe" resultType="com.java.spring_myprj.dto.review.ReviewDto">
+  		SELECT RNUM, USERNICK, RCONTENT, RDATE FROM REVIEW WHERE VNUM= #{param1} ORDER BY RDATE DESC
+  	</select>
+  	
+  	<!-- 비디오뷰 댓글쓰기 -->
+  	<insert id="vWrite">
+  		INSERT INTO REVIEW (RNUM, USERID, RCONTENT, VNUM, USERNICK) VALUES (REVIEW_SEQ.NEXTVAL,#{param1},#{param2},#{param3},#{param1})
+  	</insert>
+  	
+  	<!-- 비디오뷰 댓글삭제 -->
+  	<update id="vrDelete">
+  		DELETE FROM REVIEW WHERE RNUM=#{param1}
+  	</update>
+  	
+  	<!-- 비디오뷰 댓글수정 -->
+  	<update id="vrModify">
+  		UPDATE REVIEW SET RCONTENT=#{param1} WHERE RNUM=#{param2}
+  	</update>
+  	
+  	<!-- 비디오뷰 동영상 목록 -->
+  	<select id="ranList" resultType="com.java.spring_myprj.dto.VideoDto">
+  		SELECT VIMAGE,VTITLE,VCONTENT,VNUM FROM VIDEO WHERE USERINTERESTS LIKE '%'||#{param1}||'%'
+  	</select>
+  	
+  	<!-- 마이페이지 회원 정보조회 -->
+  	<select id="myInfo" resultType="com.java.spring_myprj.login_dto.LoginDto">
+  		SELECT USERID,USERPW,EMAIL,USERGENDER,USERIDEN,USERADDR,USERPWHINT,USERJOIN,USERINTERESTS,USERNUM,USERNICK,USERNAME,USERPWCHECK,USERPHONE,USERPWHINTLIST FROM USERS WHERE USERID=#{param1}
+  	</select>
+  	
+  	<!-- 즐겨찾기 동영상 추가 -->
+  	<update id="userInVideo">
+  		INSERT INTO FAVIDEO (USERID,VNUM,VIMAGE,VTITLE,VCONTENT) VALUES (#{param2},#{param1},#{param3},#{param4},#{param5})
+  	</update>
+  	
+  	<!-- 마이페이지 회원 정보변경 -->
+  	<update id="myModify">
+  		UPDATE USERS SET USERNAME=#{param2},USERNICK=#{param3},USERADDR=#{param4},USERPHONE=#{param5},EMAIL=#{param6},USERPW=#{param7} WHERE USERID=#{param1}
+  	</update>
+  	
+  	<!-- 마이페이지 유저 탈퇴 -->
+  	<delete id="myDelete">
+  		DELETE USERS WHERE USERID=#{param1}
+  	</delete>
+  	
+  	<!-- 내가올린 동영상 조회 -->
+  	<select id="myUploadVideo" resultType="com.java.spring_myprj.dto.VideoDto">
+		SELECT VNUM,VHIT,VDATE,USERID,VADDR,VTITLE,VCONTENT,USERINTERESTS,VREVIEW,VIMAGE FROM (SELECT VNUM,VHIT,VDATE,USERID,VADDR,VTITLE,VCONTENT,USERINTERESTS,VREVIEW,VIMAGE, ROW_NUMBER() OVER(ORDER BY VDATE DESC) VNUM_SEQ FROM VIDEO) WHERE (USERID=#{param1}) AND (VNUM_SEQ BETWEEN #{param2} AND #{param3})
+  	</select>
+  	
+  	<select id="selectBoard2Count" resultType="Integer" >
+        SELECT COUNT(*) FROM VIDEO
+    </select> 
+  	
+ </mapper>

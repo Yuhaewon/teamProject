@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.java.spring_myprj.dao.QDao">
+
+
+<sql id="includeBoard">
+                     WHERE QTITLE LIKE '%'||#{param1}||'%'            
+    </sql>
+   <select id="list1" resultType="com.java.spring_myprj.QnA_dto.QDto">
+      SELECT QNUM, USERID, USERNICK, QTITLE, QCONTENT, QDATE, QSCHECK, QHIT, QGROUP,QINDENT,QSTEP
+      FROM (
+      SELECT QNUM, USERID, USERNICK, QTITLE, QCONTENT, QDATE, QSCHECK, QHIT, QGROUP,QINDENT,QSTEP,
+       ROW_NUMBER() OVER(ORDER BY QGROUP DESC, QSTEP ASC) QNOTICE_SEQ FROM QNOTICE
+      WHERE (QTITLE LIKE '%'||#{param3}||'%')  
+       )
+      WHERE  QNOTICE_SEQ BETWEEN #{param1} AND ${param2}
+   </select>
+   <select id="list2" resultType="com.java.spring_myprj.QnA_dto.QDto">
+      SELECT QNUM, USERID, USERNICK, QTITLE, QCONTENT, QDATE, QSCHECK, QHIT, QGROUP,QINDENT,QSTEP
+      FROM (
+      SELECT QNUM, USERID, USERNICK, QTITLE, QCONTENT, QDATE, QSCHECK, QHIT, QGROUP,QINDENT,QSTEP,
+       ROW_NUMBER() OVER(ORDER BY QGROUP DESC, QSTEP ASC) QNOTICE_SEQ FROM QNOTICE
+      WHERE (QCONTENT LIKE '%'||#{param3}||'%')  
+       )
+      WHERE  QNOTICE_SEQ BETWEEN #{param1} AND ${param2}
+   </select>
+   <select id="list3" resultType="com.java.spring_myprj.QnA_dto.QDto">
+      SELECT QNUM, USERID, USERNICK, QTITLE, QCONTENT, QDATE, QSCHECK, QHIT, QGROUP,QINDENT,QSTEP
+      FROM (
+      SELECT QNUM, USERID, USERNICK, QTITLE, QCONTENT, QDATE, QSCHECK, QHIT, QGROUP,QINDENT,QSTEP,
+       ROW_NUMBER() OVER(ORDER BY QGROUP DESC, QSTEP ASC) QNOTICE_SEQ FROM QNOTICE
+      WHERE (QTITLE LIKE '%'||#{param3}||'%' or QCONTENT LIKE '%'||#{param3}||'%')  
+       )
+      WHERE  QNOTICE_SEQ BETWEEN #{param1} AND ${param2}
+   </select>
+   <select id="list0" resultType="com.java.spring_myprj.QnA_dto.QDto">
+      SELECT QNUM, USERID, USERNICK, QTITLE, QCONTENT, QDATE, QSCHECK, QHIT, QGROUP,QINDENT,QSTEP
+      FROM (
+      SELECT QNUM, USERID, USERNICK, QTITLE, QCONTENT, QDATE, QSCHECK, QHIT, QGROUP,QINDENT,QSTEP,
+       ROW_NUMBER() OVER(ORDER BY QGROUP DESC, QSTEP ASC) QNOTICE_SEQ FROM QNOTICE
+       )
+      WHERE  QNOTICE_SEQ BETWEEN #{param1} AND ${param2}
+   </select>
+   
+   
+   <select id="selectBoard2Count1" resultType="Integer" >
+         SELECT COUNT(*)  FROM QNOTICE 
+            WHERE (QTITLE LIKE '%'||#{param1}||'%') 
+    </select> 
+    <select id="selectBoard2Count2" resultType="Integer" >
+         SELECT COUNT(*)  FROM QNOTICE 
+            WHERE (QCONTENT LIKE '%'||#{param1}||'%') 
+    </select> 
+    <select id="selectBoard2Count3" resultType="Integer" >
+         SELECT COUNT(*)  FROM QNOTICE 
+            WHERE (QTITLE LIKE '%'||#{param1}||'%' or QCONTENT LIKE '%'||#{param1}||'%') 
+    </select> 
+    <select id="selectBoard2Count0" resultType="Integer" >
+         SELECT COUNT(*)  FROM QNOTICE 
+    </select> 
+
+   <select id="list" resultType="com.java.spring_myprj.QnA_dto.QDto">
+   SELECT QNUM, USERID, USERNICK, QTITLE, QCONTENT, QDATE, QSCHECK, QHIT, QGROUP,QINDENT,QSTEP
+   FROM (SELECT QNUM, USERID, USERNICK, QTITLE, QCONTENT, QDATE, QSCHECK, QHIT, QGROUP,QINDENT,QSTEP, ROW_NUMBER() OVER(ORDER BY QGROUP DESC, QSTEP ASC) QNOTICE_SEQ FROM QNOTICE)
+   WHERE QNOTICE_SEQ BETWEEN #{param1} AND ${param2}
+      
+   </select>
+   <select id="sqlTotRowCount" resultType="Integer">
+      SELECT COUNT(*) FROM QNOTICE
+   </select>
+   <insert id="write">
+      INSERT INTO
+      QNOTICE(QNUM,USERID,QTITLE,QCONTENT,QSCHECK,QHIT,QGROUP,QSTEP,QINDENT)
+      VALUES(QNOTICE_SEQ.NEXTVAL,#{param1},#{param2},#{param3},1,0,QNOTICE_SEQ.CURRVAL,0,0)
+   </insert>
+   <update id="modify">
+      UPDATE QNOTICE SET
+      USERID=#{param2},
+      QTITLE=#{param3}, QCONTENT=#{param4} WHERE
+      QNUM=#{param1}
+   </update>
+   <select id="contenView" resultType="com.java.spring_myprj.QnA_dto.QDto">
+      SELECT * FROM QNOTICE WHERE
+      QNUM=#{param1}
+   </select>
+   <update id="upHit">
+      UPDATE QNOTICE SET QHIT=QHIT+1 WHERE QNUM=#{param1}
+   </update>
+   <update id="delete">
+      DELETE FROM QNOTICE WHERE QNUM=#{param1}
+   </update>
+   <insert id="reply">
+      INSERT INTO
+      QNOTICE(USERID,QNUM,QTITLE,QCONTENT,QGROUP,QSTEP,QINDENT)
+      VALUES(#{param1},QNOTICE_SEQ.NEXTVAL,#{param2},#{param3},#{param4},#{param5}+1,#{param6}+1)
+   </insert>
+   <select id="reply_view" resultType="com.java.spring_myprj.QnA_dto.QDto">
+      SELECT * FROM QNOTICE WHERE
+      QNUM=#{param1}
+   </select>
+   <update id="uphit">
+      UPDATE QNOTICE SET QHIT=QHIT+1 WHERE QNUM=#{param3}
+   </update>
+</mapper>
+ 
